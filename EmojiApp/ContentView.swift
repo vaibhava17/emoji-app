@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  EmojiApp
+//  Emoji Lover
 //
 //  Created by Vaibhav Agarwal on 30/11/24.
 //
@@ -8,34 +8,27 @@
 import SwiftUI
 import SwiftData
 
+enum Emoji: String, CaseIterable {
+    case 😂,😍,😘,😭
+}
+
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
+    @State var selection: Emoji = .😂
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        NavigationView{
+            VStack {
+                Text(selection.rawValue).font(.system(size: 150))
+                Picker("Select Emoji", selection: $selection){
+                    ForEach(Emoji.allCases, id: \.self) { emoji in
+                        Text(emoji.rawValue)
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .pickerStyle(.segmented)
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
+            .padding()
         }
     }
 
